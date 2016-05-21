@@ -45,7 +45,8 @@
     
     
     
- 
+   app.listen(8080);
+    console.log("App listening on port 8080");
     
     // routes =================================================
     
@@ -58,26 +59,19 @@
     
     app.get('/api/users',function(request,response){
 
-
-
-        User.find({}, 'firstName lastName', function(err,users){
-            console.log(users);
+        User.find(function(err,users){
             
+            console.log("the users api has been hit");
+            
+            console.log(err);
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if(err)
+             response.send(err)
+             
+             console.log(users);
+             
             response.json(users);
         });
-        //User.find(function(err,users){
-            
-        //     console.log("the users api has been hit");
-            
-        //     console.log(err);
-        //     // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-        //     if(err)
-        //      response.send(err)
-             
-        //      console.log(users);
-             
-        //     response.json(users);
-        // });
     });
     
     app.post('/api/users',function(request,response){
@@ -131,8 +125,7 @@
     });
     
     
-     app.listen(8080);
-    console.log("App listening on port 8080");
+   
     
     
   
