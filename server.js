@@ -10,8 +10,8 @@
 
     // configuration =================
 
-    
-    mongoose.connect('mongodb://node:nodeuser@mongo.onmodulus.net:27017/uwO3mypu');     // connect to mongoDB database on modulus.io
+    mongoose.connect('mongodb://localhost/test');
+    //mongoose.connect('mongodb://node:nodeuser@mongo.onmodulus.net:27017/uwO3mypu');     // connect to mongoDB database on modulus.io
 
     app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
     app.use(morgan('dev'));                                         // log every request to the console
@@ -23,6 +23,15 @@
     // listen (start app with node server.js) ======================================
     app.listen(8080);
     console.log("App listening on port 8080");
+    
+    
+    //Start database checking
+    var db = mongoose.connection;
+    db.on('error', console.error.bind(console, 'connection error:'));
+    db.once('open', function() {
+        console.log("Database is ready");
+     
+   });
     
     
     
@@ -37,14 +46,11 @@
     // routes =================================================
     
     app.get('/api/users',function(request,response){
-        
-        console.log("the users api has been hit");
-        
-        response.json("Hello users");
-        
-        // use mongoose to get all users in the database
+
         
         User.find(function(err,users){
+            
+            console.log("the users api has been hit");
             
             console.log(err);
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
@@ -55,3 +61,28 @@
         });
     });
     
+    app.post('/api/users',function(request,response){
+        
+        //Post new user to the database
+        User.create({
+            firstName:request.body.firstName,
+            lastName:request.body.lastName,   
+        },function(err,data)
+        {
+            if(err)
+             response.send(err);
+             
+            User.find(function(err,users){
+
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if(err)
+             response.send(err)
+             
+            response.json(users);
+            });
+             
+        });
+    });
+    
+    
+  
